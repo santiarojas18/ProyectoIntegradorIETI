@@ -1,11 +1,16 @@
 package com.example.demo.repository.user;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 
+@Document
 public class User {
 
-    private final String id;
-    private final Date createdAt;
+    @Id
+    private String id;
+    private Date createdAt;
     private String name;
     private String lastName;
     private String email;
@@ -21,12 +26,14 @@ public class User {
     }
 
     public User(UserDto userDto) {
-        this.id = userDto.getId();
         this.name = userDto.getName();
         this.lastName = userDto.getLastName();
         this.email = userDto.getEmail();
         this.createdAt = new Date();
         this.password = userDto.getPassword();
+    }
+
+    public User() {
     }
 
 

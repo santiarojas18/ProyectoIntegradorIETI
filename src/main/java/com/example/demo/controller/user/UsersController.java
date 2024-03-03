@@ -13,59 +13,42 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/v1/users/")
+@RequestMapping("/v1/users")
 public class UsersController {
-    private final UsersService usersService;
+    private final UsersService userService;
 
-    public UsersController(@Autowired UsersService usersService) {
-        this.usersService = usersService;
-    }
-
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserDto userInfo) {
-        URI createdUserUri = URI.create("");
-        User user = new User(userInfo);
-        usersService.save(user);
-        return ResponseEntity.created(createdUserUri).body(user);
+    public UsersController(@Autowired UsersService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> data = usersService.all();
-        return ResponseEntity.ok(data);
+    public ResponseEntity<List<User>> all()
+    {
+        return ResponseEntity.ok(userService.all());
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<User> findById(@PathVariable("id") String id) {
-        Optional<User> user = usersService.findById(id);
-        if(!user.isEmpty()) {
-            return ResponseEntity.ok(user.get());
-        } else {
-            throw new UserNotFoundException(id);
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<User> findById(@PathVariable String id)
+    {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") String id, @RequestBody UserDto newInfo) {
-        Optional<User> user = usersService.findById(id);
-        if(!user.isEmpty()) {
-            User oldUser = user.get();
-            oldUser.update(newInfo);
-            User newUser = usersService.save(oldUser);
-            return ResponseEntity.ok(newUser);
-        } else {
-            throw new UserNotFoundException(id);
-        }
+
+    @PostMapping
+    public ResponseEntity<User> create(@RequestBody UserDto userDto)
+    {
+        return ResponseEntity.ok(userService.save(userDto));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
-        Optional<User> user = usersService.findById(id);
-        if(!user.isEmpty()) {
-            usersService.deleteById(id);
-            return ResponseEntity.ok().build();
-        } else {
-            throw new UserNotFoundException(id);
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<User> update(@RequestBody UserDto userDto, @PathVariable String id)
+    {
+        return ResponseEntity.ok(userService.update(userDto, id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> delete( @PathVariable String id)
+    {
+        return ResponseEntity.ok(userService.deleteById(id));
     }
 }
